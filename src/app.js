@@ -14,7 +14,8 @@ app.use('/static', express.static(__dirname + "/public"))
 app.set('view engine', 'jade');
 app.set('views',__dirname + '/templates');
 
-var port = 3000;
+app.set('port', (process.env.PORT || 5000));
+;
 
 app.get('/',function(req, res){
   var path = req.path;
@@ -46,10 +47,9 @@ app.get('/posts', function(req,res){
   }
 });
 
-app.listen(port, function(){
-	console.log(' Running on localhost:' + port);
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
 });
-
 
 
 
