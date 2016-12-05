@@ -1,28 +1,64 @@
 'use strict';
 
 var express = require('express'),
-	posts = require('./mock/posts.json'); 
+	  posts = require('./mock/posts.json'); 
+
+var postsList = Object.keys(posts).map(function(value){
+  return posts[value]
+});
 
 var app = express();
+
+app.use('/static', express.static(__dirname + "/public"))
+
+app.set('view engine', 'jade');
+app.set('views',__dirname + '/templates');
 
 var port = 3000;
 
 app.get('/',function(req, res){
-	res.send("I am in love with treehouse");
+  var path = req.path;
+  res.locals.path = path;
+	res.render('index')
 });
 
-app.get('/blog/:title?', function(req,res){
-	
-	var title = req.params.title;
-	if(title === undefined){
-		res.status(503);node
-		res.send("This page is under contruction")
-	} else {
-			var post = posts[title];
-			res.send(post);
-		}
+app.get('/contact', function(req,res){
+  res.render('contact')
+});
+
+app.get('/blog/:title?', function(req, res){ 
+  var title = req.params.title;
+  if (title === undefined) {
+    res.status(503);
+    res.render('blog', {posts: postsList});
+  } else {
+    var post = posts[title] || {};
+    res.render('post', {post:post});
+  }
+});
+
+//Get JSON
+app.get('/posts', function(req,res){
+  if (req.query.raw){
+    res.json(posts);
+  } else{
+    res.json(postsList);
+  }
 });
 
 app.listen(port, function(){
-	console.log('Running on localhost:' + port);
+	console.log(' Running on localhost:' + port);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
